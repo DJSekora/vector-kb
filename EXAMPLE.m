@@ -1,0 +1,1 @@
+[output_vector, tail_weights, tail_inds] = simplexQAunlimited(str2vec('grass',h3,alphabetized_words,word_index),'AtLocation',conceptnet.relations,conceptnet,h3,index,word);
