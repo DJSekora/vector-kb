@@ -2,9 +2,11 @@ function [relation_list, full_sorted, ft_index_list,total_dist] = best_path2(vec
 %given two vectors and a relation dictionary, this tries to find a single connected path between the
 %head and the tail with low cost.
 
+
 range=1:length(db.fti1);
 relation_list=[];
 full_sorted=[];
+ft_index_list=[];
 
 %there is a loop here in case we want to find more potentially useful
 %terms.
