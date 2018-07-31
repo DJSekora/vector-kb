@@ -7,6 +7,7 @@ range=1:length(db.fti1);
 relation_list=[];
 full_sorted=[];
 ft_index_list=[];
+tail_term=[];
 
 %there is a loop here in case we want to find more potentially useful
 %terms.
