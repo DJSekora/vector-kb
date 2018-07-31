@@ -1,0 +1,7 @@
+add term ARLDrone
+ARLDrone IsA Drone
+ARLDrone HasA propellor
+
+add predicate ownedBy
+pet ownedBy person
+books ownedBy student
