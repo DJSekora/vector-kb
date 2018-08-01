@@ -5,3 +5,15 @@ ARLDrone HasA propellor
 add predicate ownedBy
 pet ownedBy person
 books ownedBy student
+
+add term HasA
+HasA IsA has
+
+add term newfact1
+newfact1 hasSubject Jack
+newfact1 hasPredicate HasA
+newfact1 hasObject Drone
+
+add predicate believes
+
+Lincoln believes newfact1
