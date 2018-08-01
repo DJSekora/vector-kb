@@ -26,12 +26,12 @@ for ii=1:size(TraceArray{1},1)
            wordsize=wordsize+1;
         else
             %add predicate
-           predicates{predsize+1}=tail;
+           db.relations{predsize+1}=tail;
            predsize=predsize+1;
         end
     else
         %add fact to database
-        [db, factcount, h3] =add_fact(head,pred,tail,h3, db, predicates, word,alphabetized_words, word_index, index, factcount);
+        [db, factcount, h3] =add_fact(head,pred,tail,h3, db, db.relations, word,alphabetized_words, word_index, index, factcount);
         dbsize=dbsize+1;
     end
 end
