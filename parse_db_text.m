@@ -2,6 +2,7 @@
 index = flann_build_index(h3,struct('algorithm','linear'));
 
 word=word(1:1000000);
+h3=h3(:,1:1000000);
 db=conceptnet2;
 dbsize=size(db.fti1,2);
 wordsize=size(word,2);

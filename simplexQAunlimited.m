@@ -19,11 +19,15 @@ else
 end
 
 [answer_projection, offset, tail_weights, tail_inds]=find_tails(nearest_head_inds,db,h3, ic, same_relation, head_vectors, vec1, word, heads);
-nearest_head_inds2=nearest_head_inds(2:end);
+if size(nearest_head_inds,1)>1
+    nearest_head_inds2=nearest_head_inds(2:end);
+else
+    nearest_head_inds2=nearest_head_inds;
+end
 [answer_projection2, offset2, tail_weights2, tail_inds2]=find_tails(nearest_head_inds2,db,h3, ic, same_relation, head_vectors, vec1, word, heads);
-output_vector=answer_projection2/4+3*answer_projection/4+offset2/6+3*offset/6;
+output_vector=answer_projection2/4+3*answer_projection/4+1*offset2/10+3*offset/10;
 %output_vector=answer_projection2/4+3*answer_projection/4+offset/2;
-%output_vector=answer_projection/2+offset/3;
+%output_vector=answer_projection/2;
 answer_inds=vec2ind(output_vector,index,30);
 for ii=1:size(answer_inds)
     simplex_distance(ii)=distanceToSimplex(h3(:,answer_inds(ii))',h3(:,[tail_inds tail_inds2])');
@@ -41,7 +45,7 @@ params.attempts=1;
 params.exponent=4;
 params.pos=true;
 params.cutoff=.002;
-[relation_list, full_sorted, ft_index_list] = best_path2(vec1,output_vector,h3, db, db.relations, word,params);
+[relation_list, full_sorted, ft_index_list] = best_path2(vec1,output_vector,h3, db, predicates, word,params);
 % answer_inds=vec2str(mexNormalize(answer_projection2+offset2/3),index,word,10);
 % answer=word(answer_inds);
 % fprintf('projection2+offset2/3: ');
