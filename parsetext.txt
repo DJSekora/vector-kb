@@ -7,7 +7,7 @@ pet ownedBy person
 books ownedBy student
 
 add term HasA
-HasA IsA has
+HasA IsA predicate
 
 add term newfact1
 newfact1 hasSubject Jack
