@@ -38,3 +38,6 @@ for ii=1:size(TraceArray{1},1)
         dbsize=dbsize+1;
     end
 end
+reverse_db=db;
+reverse_db.fti1=db.fti2;
+reverse_db.fti2=db.fti1;
