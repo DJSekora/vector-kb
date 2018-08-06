@@ -43,6 +43,15 @@ for ii=1:size(relation_list,2)
     tail_idx=find(unique_indices==second_indices(ii));
     dists(head_idx,tail_idx)=.01*(1-full_sorted(ii));
 end
+%to prevent one-step answers, the maximum of start_to_point or point_to_end
+%is set to a very high value.
+start_to_points=dists(end-1,1:end-2);
+points_to_end=dists(1:end-2,end)';
+start_greater=(start_to_points>points_to_end);
+start_greater2=start_greater*1000000000000;
+dists(end-1,1:end-2)=dists(end-1,1:end-2)+start_greater2;
+end_greater=(1-start_greater)*1000000000000;
+dists(1:end-2,end)=dists(1:end-2,end)+end_greater';
 %the distance directly from term1 to term2 is set to a very high number so
 %that this direct route is never taken.
 dists(end-1,end)=1000000000000;
@@ -59,11 +68,12 @@ while solutions<solution_limit
             starts(count)=jj;
             ends(count)=kk;
             if solutions==1
-                %eliminate the last step in the path to get various possible
-                %answers.
+
                 weights(count)=dists(jj,kk);
             else
                 if jj==pathend
+                  %eliminate the last step in the path to get various possible
+                %answers.
                     weights(count)=1000000000000;
                 end
             end
