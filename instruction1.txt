@@ -1,0 +1,6 @@
+add term NewGoal1
+NewGoal1 InstanceOf Goal
+NewGoal1 CurrentGoalForMission DemoMission1
+NewGoal1 HasActionType Scout
+NewGoal1 HasActorsAll ARLDrone
+

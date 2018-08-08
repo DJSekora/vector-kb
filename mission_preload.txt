@@ -1,0 +1,10 @@
+add term DemoMission1
+DemoMission1 IsA Mission
+
+add term Falcon1
+Falcon1 InstanceOf UAV
+Falcon1 ControlledBy USArmy
+
+add term Jackal1
+Jackal1 InstanceOf UGV
+Jackal1 ControlledBy USArmy

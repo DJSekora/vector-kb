@@ -1,0 +1,18 @@
+add term ARLDrone
+ARLDrone IsA Drone
+
+add term UGV
+UGV IsA ARLDrone
+UGV NotCapableOf Flight
+
+add term UAV
+UAV IsA ARLDrone
+UAV CapableOf Flight
+
+add term USArmy
+USArmy InstanceOf Military
+add predicate ControlledBy
+
+add predicate CurrentGoalForMission
+add predicate HasActionType
+add predicate HasActorsAll
