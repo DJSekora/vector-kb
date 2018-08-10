@@ -1,4 +1,4 @@
-function [relation_list, full_sorted, ft_index_list,total_dist] = best_path2(vec1,vec2,h3, db, relation, word,params)
+function [relation_list, full_sorted, ft_index_list,total_cost,answers] = best_path2(vec1,vec2,h3, db, relation, word,params)
 %given two vectors and a relation dictionary, this tries to find a single connected path between the
 %head and the tail with low cost.
 
@@ -16,9 +16,9 @@ for ii=1:params.attempts
     [summed_relations, sorted_values] = path_find_core2(vec1,vec2, db, range, relation, word,h3,params);
     %fprintf('\n');
     relation_list=[relation_list,range(summed_relations)];
-    full_sorted=[full_sorted;sorted_values];
+    full_sorted=[full_sorted sorted_values];
     range = setdiff(1:length(db.fti1),relation_list);
-    fprintf(';');
+    fprintf('\nrelations found\n');
 end
 
 first_indices=db.fti1(relation_list);
@@ -58,22 +58,22 @@ dists(end-1,end)=1000000000000;
 
 %set up the directed graph
 
-solutions=0;
+solution_count=0;
 solution_limit=1000;
-while solutions<solution_limit
-    solutions=solutions+1;
+while solution_count<solution_limit
+    solution_count=solution_count+1;
     count=1;
     for jj=1:size(dists,1)
         for kk=1:size(dists,2)
             starts(count)=jj;
             ends(count)=kk;
-            if solutions==1
-
+            if solution_count==1
+                
                 weights(count)=dists(jj,kk);
             else
                 if jj==pathend
-                  %eliminate the last step in the path to get various possible
-                %answers.
+                    %eliminate the last step in the path each time to get various possible
+                    %answers.
                     weights(count)=1000000000000;
                 end
             end
@@ -90,52 +90,34 @@ while solutions<solution_limit
     
     %print the lowest cost path
     total_cost=0;
-    if size(path,2)>3
-        for pathstep=2:size(path,2)-2
-            aa=find(first_indices==unique_indices(path(pathstep)));
-            bb=find(second_indices==unique_indices(path(pathstep+1)));
-            current_relation=intersect(aa,bb);
-            head_term=word{unique_indices(path(pathstep))};
-            tail_term=word{unique_indices(path(pathstep+1))};
-            if size(current_relation,2)>0
-                current_relation=current_relation(1);
-                if pathstep==2
-                    fprintf('-%.3f->',dists(path(1),path(2)));
-                    total_cost=total_cost+dists(path(1),path(2));
-                end
-                relation_name=relation{db.ftir(relation_list(current_relation))};
-                %head_term=word{db.fti1(relation_list(current_relation))};
-                %tail_term=word{db.fti2(relation_list(current_relation))};
-                ft_index_list(pathstep)=relation_list(current_relation);
-                fprintf('%s|%s ',head_term,relation_name);
-            else
-                    
-                    fprintf('-%.3f-> %s ',dists(path(pathstep),path(pathstep+1)),tail_term);
-                    total_cost=total_cost+dists(path(pathstep),path(pathstep+1));
-                
-            end
-            dist=dists(path(pathstep),path(pathstep+1));
-            fprintf('%.3f ->',dist);
-            total_cost=total_cost+dist;
-            if pathstep==size(path,2)-2
-                fprintf('%s %.3f\n',tail_term,dists(path(end-1),path(end)));
-                total_cost=total_cost+dists(path(end-1),path(end));
-                %fprintf('Answer:%s total cost:%.3f\n\n',tail_term,total_cost);
-            end
-            
+    dist=dists(path(1),path(2));
+    last_word=word{unique_indices(path(end-1))};
+    fprintf('%-30s %.3f ->',last_word,dist);
+    total_cost=total_cost+dist;
+    for pathstep=2:size(path,2)-2
+        aa=find(first_indices==unique_indices(path(pathstep)));
+        bb=find(second_indices==unique_indices(path(pathstep+1)));
+        current_relation=intersect(aa,bb);
+        head_term=word{unique_indices(path(pathstep))};
+        if size(current_relation,2)>0
+            %case where a relation is defined
+            current_relation=current_relation(1);
+            relation_name=relation{db.ftir(relation_list(current_relation))};
+            ft_index_list(pathstep)=relation_list(current_relation);
+            fprintf('%s|%s ',head_term,relation_name);
+        else
+            %case where there is no relation between the head and tail
+            fprintf('%s ',head_term);
         end
-        
-        if total_cost>600
-            solutions=solution_limit;
-        end
-    else
-        tail_term=word{unique_indices(path(2))};
-        fprintf('%s %.3f\n',dists(path(1),path(2)),tail_term,dists(path(2),path(3)));
-        total_cost=total_cost+dists(path(1),path(2))+dists(path(2),path(3));
-        %fprintf('Answer:%s total cost:%.3f\n\n',tail_term,total_cost);
-        if total_cost>600
-            solutions=solution_limit;
-        end
+        dist=dists(path(pathstep),path(pathstep+1));
+        fprintf('%.3f ->',dist);
+        total_cost=total_cost+dist;
     end
+    total_cost=total_cost+dists(path(end-1),path(end));
+    fprintf('%s %.3f / total:%.3f\n',last_word,dists(path(end-1),path(end)),total_cost);
+    if total_cost>300
+        solution_count=solution_limit;
+    end
+    answers{solution_count}=last_word;
 end
 

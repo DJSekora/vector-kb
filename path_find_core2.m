@@ -70,7 +70,7 @@ sorted_values=full(sorted_values);
 for ii=1:size(summed_relations,2)
     p=sorted_values(ii);
     triple{ii}=['( ' relations{ii} ' | '  first_terms{ii} ' | ' second_terms{ii} ' )'];
-    if p>.04
+    if p>0
         fprintf('%0.2f %s\n',p,triple{ii});
     end
     
