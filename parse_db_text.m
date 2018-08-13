@@ -22,7 +22,7 @@ for ii=1:size(TraceArray{1},1)
             %add term
            word{wordsize+1}=tail;
            [alphabetized_words, word_index]=sort(word);
-           h3(:,wordsize+1)=ones(300,1);
+           h3(:,wordsize+1)=.0577*randn(300,1);
            index = flann_build_index(h3,struct('algorithm','linear'));
            factcount(wordsize+1)=0;
            wordsize=wordsize+1;
@@ -41,3 +41,4 @@ end
 reverse_db=db;
 reverse_db.fti1=db.fti2;
 reverse_db.fti2=db.fti1;
+reverse_db.relations=reverse_conceptnet.relations;
