@@ -18,9 +18,10 @@ db.fti1(dbsize+1)=headind;
 db.fti2(dbsize+1)=tailind;
 db.ftir(dbsize+1)=predind;
 if factcount(headind)<10
-    update_vector = mexNormalize(simplexQAvector(h3(:,tailind),pred,predicates,reverse_db,h3,index,word));
+    update_vector = simplexQAvector(h3(:,tailind),pred,predicates,reverse_db,h3,index,word);
     a=(factcount(headind)*h3(:,headind)+update_vector)/(factcount(headind)+1);
-    h3(:,headind)=a;
+    stda=std(a);    
+    h3(:,headind)=(.0577/stda)*a;
     index = flann_build_index(h3,struct('algorithm','linear'));
     factcount(headind)=factcount(headind)+1;
 end
