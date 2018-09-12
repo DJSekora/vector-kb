@@ -12,7 +12,17 @@ UAV CapableOf Flight
 add term USArmy
 USArmy InstanceOf Military
 add predicate ControlledBy
+USArmy ControlledBy UnitedStates
+
 
 add predicate CurrentGoalForMission
 add predicate HasActionType
 add predicate HasActorsAll
+
+add term DummyMission
+add term DummyGoal
+DummyMission InstanceOf Mission
+DummyGoal InstanceOf Goal
+DummyGoal HasActionType Scout
+DummyGoal HasActorsAll ARLDrone
+DummyGoal CurrentGoalForMission DummyMission

@@ -1,3 +1,6 @@
+% Load all the files
+load_all_data;
+
 % Load the initial stuff (do this better later - this is hacky)
 pdbtfilename = "master_preload.txt";
 parse_db_text;
