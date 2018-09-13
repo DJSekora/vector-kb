@@ -3,7 +3,7 @@ function [answer_projection, offset, tail_weights, tail_inds]=find_tails(nearest
 for ii=1:size(nearest_head_inds,1)
     current_vecs=db.fti2(same_relation(ic==nearest_head_inds(ii)));
     vectally(ii)=size(current_vecs,2);
-    current_vec=mexNormalize(mean(h3(:,current_vecs),2));
+    current_vec=mean(h3(:,current_vecs),2);
     tail_simplex(:,ii)=current_vec;
 end
 
@@ -19,7 +19,7 @@ for ii=1:size(nearest_head_inds,1)
     end
 end
 fprintf('\n');
-vecout=mexNormalize(sum(bsxfun(@times,head_weights,tail_simplex),2));
+vecout=mean(bsxfun(@times,head_weights,tail_simplex),2);
 [all_tails, ia, ic]=unique(db.fti2(same_relation),'stable');
 all_tail_vectors = h3(:,all_tails);
 tail_vector_index = flann_build_index(all_tail_vectors,struct('algorithm','linear'));
