@@ -1,5 +1,5 @@
 %% Initialize variables.
-filename = 'D:\matlab apps\AMR.txt';
+filename = 'AMR.txt';
 delimiter = ',';
 
 %% Read columns of data as text:
@@ -36,7 +36,7 @@ rawStringColumns = string(raw(:, [1,2,3]));
 AMR = raw;
 
 %% Clear temporary variables
-clearvars filename delimiter formatSpec fileID dataArray ans raw col numericData rawNumericColumns rawStringColumns;
+clearvars filename delimiter formatSpec fileID dataArray ans raw col numericData rawNumericColumns rawStringColumns new_word_list factcount AMR2;
 
 % strip quotes
 % strip periods
@@ -54,6 +54,21 @@ db.relations{1,90}='recipient';
 db.relations{1,91}='mod';
 db.relations{1,92}='operator';
 db.relations{1,93}='name';
+db.relations{1,94}='quant';
+
+dbsize=size(db.fti1,2);
+wordsize=size(word,2);
+predsize=size(db.relations,2);
+clear factcount;
+factcount(1:wordsize)=10;
+
+prefix{1,1}='gas';prefix{1,2}='agent';prefix{1,3}='becomes';
+prefix{2,1}='liquid';prefix{2,2}='patient';prefix{2,3}='becomes';
+prefix{3,1}='gift';prefix{3,2}='recipient';prefix{3,3}='recipient';
+prefix{4,1}='adjective';prefix{4,2}='mod';prefix{4,3}='noun';
+prefix{5,1}='sum';prefix{5,2}='operator';prefix{5,3}='number';
+prefix{6,1}='president';prefix{6,2}='name';prefix{6,3}='Obama';
+prefix{7,1}='mice';prefix{7,2}='quant';prefix{7,3}='three';
 
 for ii=1:size(AMR,1)
     fprintf('%d ',ii);
@@ -75,25 +90,47 @@ for ii=1:size(AMR,1)
                     %this name is already in the dictionary, and not on the
                     %new word list
                 else
-                    new_words{new_word_count}=current_word;
+                    %this word is neither in the dictionary nor the new
+                    %word list
+                    new_word_list{new_word_count}=current_word;
                     new_word_count=new_word_count+1;         
                     [token, remain] = strtok(current_word,'-');
                     parent=remain(2:end);
-                    try
-                        vector=str2vec(parent,h3,alphabetized_words,word_index);    
-                        % create a new term with this label
-                        [h3, word]=add_term_to_dictionary(current_word,vector,word,h3);
-                        [alphabetized_words, word_index]=sort(word);
-                        [db]=add_fact_to_db(current_word,'IsA',parent,db,h3,alphabetized_words,word_index);    
-                    catch
-                    end
+                    new_row{1,1}='add'; new_row{1,2}='term'; new_row{1,3}=char(current_word);
+                    new_row{2,1}=char(current_word); new_row{2,2}='IsA'; new_row{2,3}= char(parent);
+                    prefix=[new_row ; prefix];
                 end
                 
             end    
         end
-       
         AMR2{ii,jj}=current_word;
     end
-    [alphabetized_words, word_index]=sort(word);
-    [db]=add_fact_to_db(AMR2{ii,1},AMR2{ii,2},AMR2{ii,3},db,h3,alphabetized_words,word_index);
+end
+
+AMR2=[prefix; AMR2];
+
+for ii=1:size(AMR2,1)
+    head=AMR2{ii,1};
+    pred=AMR2{ii,2};
+    tail=AMR2{ii,3};
+    if strcmp(head,'add')
+        if strcmp(pred, 'term')
+            %add term
+           word{wordsize+1}=tail;
+           [alphabetized_words, word_index]=sort(word);
+           h3(:,wordsize+1)=.0577*randn(300,1);
+           index = flann_build_index(h3,struct('algorithm','linear'));
+           factcount(wordsize+1)=0;
+           wordsize=wordsize+1;
+        else
+            %add predicate
+           db.relations{predsize+1}=tail;
+           predsize=predsize+1;
+        end
+    else
+        %add fact to database
+        [db, factcount, h3] =add_fact(head,pred,tail,h3, db, db.relations, word,alphabetized_words, word_index, index, factcount);
+        index = flann_build_index(h3,struct('algorithm','linear'));
+        dbsize=dbsize+1;
+    end
 end
