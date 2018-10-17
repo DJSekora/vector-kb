@@ -41,7 +41,7 @@ dists=(dists_raw*2).^(2*params.exponent);
 for ii=1:size(relation_list,2)
     head_idx=find(unique_indices==first_indices(ii));
     tail_idx=find(unique_indices==second_indices(ii));
-    dists(head_idx,tail_idx)=.01*(1-full_sorted(ii));
+    dists(head_idx,tail_idx)=.001*(1-full_sorted(ii));
 end
 %to prevent one-step answers, the maximum of start_to_point or point_to_end
 %is set to a very high value.
