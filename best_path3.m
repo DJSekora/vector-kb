@@ -1,4 +1,4 @@
-function [relation_list, full_sorted, ft_index_list,total_cost,answers] = best_path2(vec1,vec2,h3, db, relation, word,params)
+function [path_strings,total_costs,answers] = best_path3(vec1,vec2,h3, db, relation, word,params)
 %given two vectors and a relation dictionary, this tries to find a single connected path between the
 %head and the tail with low cost.
 
@@ -13,12 +13,11 @@ tail_term=[];
 %terms.
 for ii=1:params.attempts
     %this gets all the potential terms and relations.
-    [summed_relations, sorted_values] = path_find_core2(vec1,vec2, db, range, relation, word,h3,params);
+    [summed_relations, sorted_values] = path_find_core_no_debug(vec1,vec2, db, range, relation, word,h3,params);
     %fprintf('\n');
     relation_list=[relation_list,range(summed_relations)];
     full_sorted=[full_sorted sorted_values];
     range = setdiff(1:length(db.fti1),relation_list);
-    fprintf('\nrelations found\n');
 end
 
 first_indices=db.fti1(relation_list);
@@ -96,7 +95,7 @@ while solution_count<solution_limit
     dist=dists(path(1),path(2));
     analogy_dist=analogy_dists(path(1),path(2));
     last_word=word{unique_indices(path(end-1))};
-    fprintf('%-30s %.3f ->',last_word,dist);
+    path_string=sprintf('%.3f ->',dist);
     total_cost=total_cost+dist;
     analogy_cost=analogy_cost+dist;
     for pathstep=2:size(path,2)-2
@@ -109,23 +108,30 @@ while solution_count<solution_limit
             current_relation=current_relation(1);
             relation_name=relation{db.ftir(relation_list(current_relation))};
             ft_index_list(pathstep)=relation_list(current_relation);
-            fprintf('%s|%s ',head_term,relation_name);
+            nextpath=sprintf('%s|%s ',head_term,relation_name);
+            path_string=[path_string nextpath];
         else
             %case where there is no relation between the head and tail
-            fprintf('%s ',head_term);
+            nextpath=sprintf('%s ',head_term);
+            path_string=[path_string nextpath];
         end
         dist=dists(path(pathstep),path(pathstep+1));
         analogy_dist=analogy_dists(path(pathstep),path(pathstep+1));
-        fprintf('%.3f ->',dist);
+        nextpath=sprintf('%.3f ->',dist);
+        path_string=[path_string nextpath];
         total_cost=total_cost+dist;
         analogy_cost=analogy_cost+analogy_dist;
     end
     total_cost=total_cost+dists(path(end-1),path(end));
     analogy_cost=analogy_cost*100000+dists(path(end-1),path(end));
-    fprintf('%s %.3f / total:%.3f analogy:%.3f\n',last_word,dists(path(end-1),path(end)),total_cost, analogy_cost);
+    nextpath=sprintf('%s %.3f',last_word,dists(path(end-1),path(end)));
+    path_string=[path_string nextpath];
+    
+    answers{solution_count}=last_word;
+    path_strings{solution_count}=path_string;
+    total_costs{solution_count}=total_cost;
     if total_cost>300
         solution_count=solution_limit;
     end
-    answers{solution_count}=last_word;
 end
 
