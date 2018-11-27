@@ -1,4 +1,4 @@
-function [output_vector, tail_weights, tail_inds,answers,relation_list] = simplexQAunlimited(vec1,relation_term,predicates,db,h3,index,word)
+function [output_vector, tail_weights, tail_inds,answers,relation_list,answer_inds,paths,total_costs] = simplexQAunlimited(vec1,relation_term,predicates,db,h3,index,word)
 %IndexC = strfind(predicates, relation_term);
 %matches = find(not(cellfun('isempty', IndexC)));
 IndexC = strcmp(predicates, relation_term);
@@ -44,8 +44,8 @@ fprintf('\n');
 params.attempts=1;
 params.exponent=4;
 params.pos=true;
-params.cutoff=.002;
-[relation_list, full_sorted, ft_index_list,total_cost,answers] = best_path2(vec1,output_vector,h3, db, predicates, word,params);
+params.cutoff=.05;
+[relation_list, full_sorted, ft_index_list,total_costs,answers,paths] = best_path2(vec1,output_vector,h3, db, predicates, word,params, heads(nearest_head_inds));
 % answer_inds=vec2str(mexNormalize(answer_projection2+offset2/3),index,word,10);
 % answer=word(answer_inds);
 % fprintf('projection2+offset2/3: ');
