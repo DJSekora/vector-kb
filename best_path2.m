@@ -47,19 +47,16 @@ end
 
 %to prevent one-step answers, the heads are given a high distance from the
 %end, and everything else is given a high distance from the start.
-% start_to_points=dists(end-1,1:end-2);
-% points_to_end=dists(1:end-2,end)';
-% start_greater=(start_to_points>points_to_end);
-% end_greater=1-start_greater;
-[~,heads_in_unique_indices]=intersect(unique_indices,heads);
-[~,tails_in_unique_indices]=setdiff(unique_indices,heads);
+ start_to_points=dists(end-1,1:end-2);
+ points_to_end=dists(1:end-2,end)';
+ start_greater=(start_to_points>points_to_end);
+ end_greater=1-start_greater;
+ 
+real_heads=union(unique_indices(end_greater==1),heads); 
+[chosen,heads_in_unique_indices]=intersect(unique_indices,real_heads);
+[~,tails_in_unique_indices]=setdiff(unique_indices,chosen);
 dists(heads_in_unique_indices,end)=100000000000;
 dists(end-1,tails_in_unique_indices)=10000000000;
-
-%start_greater2=start_greater*1000000000000;
-%dists(end-1,1:end-2)=dists(end-1,1:end-2)+start_greater2;
-%end_greater=(1-start_greater)*1000000000000;
-%dists(1:end-2,end)=dists(1:end-2,end)+end_greater';
 
 %the distance directly from term1 to term2 is set to a very high number so
 %that this direct route is never taken.
@@ -102,7 +99,7 @@ while solution_count<solution_limit
     dist=dists(path(1),path(2));
     last_word=word{unique_indices(path(end-1))};
     fprintf('%-30s %.3f ->',last_word,dist);
-    %total_cost=total_cost+dist;
+    total_cost=total_cost+dist;
     for pathstep=2:size(path,2)-2
         aa=find(head_indices==unique_indices(path(pathstep)));
         bb=find(tail_indices==unique_indices(path(pathstep+1)));
